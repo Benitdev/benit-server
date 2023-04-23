@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 
 const saltRounds = 12;
 
-
+ 
 // **** Functions **** //
 
 /**

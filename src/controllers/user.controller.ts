@@ -1,17 +1,16 @@
 import type { Request, Response } from "express"
-import { Post } from "@src/models/Post"
-import type { TPost } from "@src/types"
+import { User } from "@src/models/User"
 
-export const getPosts = async (req: Request, res: Response) => {
+export const getUsers = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find()
-    res.status(200).json({ data: posts, message: "Get posts successfully" })
+    const users = await User.find()
+    res.status(200).json({ data: users, message: "Get posts successfully" })
   } catch (err) {
     res.status(500).json(err)
   }
 }
 
-export const createPost = async (req: Request, res: Response) => {
+/* export const createPost = async (req: Request, res: Response) => {
   try {
     const { title, slug, content, authorId } = req.body as TPost
     await Post.create({
@@ -25,3 +24,4 @@ export const createPost = async (req: Request, res: Response) => {
     res.status(500).json(err)
   }
 }
+ */

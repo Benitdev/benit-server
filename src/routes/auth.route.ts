@@ -1,5 +1,5 @@
 import HttpStatusCodes from "@src/declarations/major/HttpStatusCodes"
-import jwtUtil from "@src/util/jwt-util"
+import jwtUtil from "@src/utils/jwt-util"
 import { Router } from "express"
 import passport from "passport"
 
