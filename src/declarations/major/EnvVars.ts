@@ -10,6 +10,9 @@ export default {
   facebookSecretId: process.env.FACEBOOK_SECRET_ID ?? "",
   githubClientId: process.env.GITHUB_CLIENT_ID ?? "",
   githubSecretId: process.env.GITHUB_SECRET_ID ?? "",
+  cloudinaryName: process.env.CLOUDINARY_NAME ?? "",
+  cloudinaryKey: process.env.CLOUDINARY_KEY ?? "",
+  cloudinarySecret: process.env.CLOUDINARY_SECRET ?? "",
   cookieProps: {
     key: "ExpressGeneratorTs",
     secret: process.env.COOKIE_SECRET ?? "",

@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 const codeSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    description: { type: String },
     categoryID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
@@ -15,7 +16,7 @@ const codeSchema = new mongoose.Schema(
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // required: true,
     },
     status: {
       type: String,

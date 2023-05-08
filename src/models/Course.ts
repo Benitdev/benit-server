@@ -6,12 +6,25 @@ const courseSchema = new mongoose.Schema(
     slug: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String },
+    categoryID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     tags: [{ type: String }],
     feature: { type: String },
-    courserChapter: [
+    type: { type: String },
+    courserChapters: [
       {
+        index: Number,
         title: String,
         description: String,
+        lesson: [
+          {
+            title: String,
+            videoID: String,
+          },
+        ],
         createdAt: { type: Date, default: Date.now },
         updateAt: { type: Date, default: Date.now },
       },
@@ -28,7 +41,11 @@ const courseSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
-    status: { type: String },
+    status: {
+      type: String,
+      enum: ["pending", "released", "removed"],
+      default: "released",
+    },
   },
   { timestamps: true }
 )

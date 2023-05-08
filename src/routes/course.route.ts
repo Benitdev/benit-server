@@ -1,8 +1,14 @@
 import { Router } from "express"
-import { getCourses } from "@src/controllers/course.controller"
+import {
+  createCourse,
+  getCourses,
+  updateCourse,
+} from "@src/controllers/course.controller"
 
 const courseRoutes = Router()
 
 courseRoutes.get("/", getCourses)
+courseRoutes.post("/", createCourse)
+courseRoutes.put("/:id", updateCourse)
 
 export default courseRoutes

@@ -1,7 +1,7 @@
 import { Router } from "express"
 
 import { isAuthenticated } from "../middlewares/auth"
-import { getUsers } from "@src/controllers/user.controller"
+import { getUsers, updateUser } from "@src/controllers/user.controller"
 
 const userRoutes = Router()
 
@@ -14,5 +14,6 @@ userRoutes.get(
   }
 )
 userRoutes.get("/list", getUsers)
+userRoutes.patch("/:id", updateUser)
 
 export default userRoutes

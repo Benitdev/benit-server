@@ -25,6 +25,10 @@ const postSchema = new mongoose.Schema(
       },
     ],
     views: { type: Number },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "removed"],
+    },
   },
   { timestamps: true }
 )

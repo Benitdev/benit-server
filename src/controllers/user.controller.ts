@@ -1,5 +1,6 @@
 import type { Request, Response } from "express"
 import { User } from "@src/models/User"
+import { TUser } from "@src/types"
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -10,18 +11,13 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 }
 
-/* export const createPost = async (req: Request, res: Response) => {
+export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { title, slug, content, authorId } = req.body as TPost
-    await Post.create({
-      title,
-      slug,
-      content,
-      authorId,
-    })
-    res.status(200).json({ message: "oke" })
+    const { id } = req.params
+    const data = req.body as TUser
+    await User.updateOne({ _id: id }, data)
+    res.status(200).json({ message: "Chỉnh sửa tài khoản thành công!" })
   } catch (err) {
     res.status(500).json(err)
   }
 }
- */

@@ -1,10 +1,10 @@
 import "./pre-start" // Must be the first import
 import logger from "jet-logger"
 import { exit } from "process"
+import mongoose from "mongoose"
 
 import EnvVars from "@src/declarations/major/EnvVars"
 import server from "./server"
-import mongoose from "mongoose"
 
 // **** Start server **** //
 
