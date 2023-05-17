@@ -11,6 +11,7 @@ const courseSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    goals: [String],
     tags: [{ type: String }],
     feature: { type: String },
     type: { type: String },
