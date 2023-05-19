@@ -29,6 +29,11 @@ export const getCourseDetail = async (req: Request, res: Response) => {
 export const createCourse = async (req: Request, res: Response) => {
   try {
     const data = req.body as TCourse
+    data.courseChapters.forEach((chapter) => {
+      chapter.lessons.forEach(
+        (lesson) => (lesson.slug = stringToSlug(lesson.title))
+      )
+    })
     const slug = stringToSlug(data.title)
     await Course.create({ ...data, slug })
     res.status(200).json({ message: "Thêm khoá học thành công!" })
@@ -41,6 +46,11 @@ export const updateCourse = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const data = req.body as TCourse
+    data.courseChapters.forEach((chapter) => {
+      chapter.lessons.forEach(
+        (lesson) => (lesson.slug = stringToSlug(lesson.title))
+      )
+    })
     const slug = stringToSlug(data.title)
     await Course.updateOne({ _id: id }, { ...data, slug })
     res.status(200).json({ message: "Chỉnh sửa khoá học thành công!" })

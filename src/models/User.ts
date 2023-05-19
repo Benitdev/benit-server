@@ -11,7 +11,17 @@ const userSchema = new mongoose.Schema(
     provider: { type: String },
     role: { type: String, required: true, default: "user" },
     status: { type: String, default: "active" },
-    courserLearned: {},
+    courseLearned: [
+      {
+        courseSlug: String,
+        chapters: [
+          {
+            chapterID: String,
+            lessons: [String],
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true }
 )

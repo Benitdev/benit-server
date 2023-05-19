@@ -15,15 +15,18 @@ const courseSchema = new mongoose.Schema(
     tags: [{ type: String }],
     feature: { type: String },
     type: { type: String },
-    courserChapters: [
+    level: String,
+    courseChapters: [
       {
         index: Number,
         title: String,
         description: String,
-        lesson: [
+        lessons: [
           {
             title: String,
+            slug: String,
             videoID: String,
+            duration: String,
           },
         ],
         createdAt: { type: Date, default: Date.now },

@@ -10,7 +10,7 @@ export type TCourse = {
   likes: any[]
   comments: any[]
   views: number
-  courserChapters: TChapter[]
+  courseChapters: TChapter[]
   createAt: string
   updateAt: string
 }
@@ -19,8 +19,10 @@ type TChapter = {
   index: number
   title: string
   description: string
-  lesson: {
+  lessons: {
     title: string
+    slug: string
     videoID: string
+    duration: string
   }[]
 }
