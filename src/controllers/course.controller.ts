@@ -3,10 +3,13 @@ import type { Request, Response } from "express"
 import { Course } from "@src/models/Course"
 import { stringToSlug } from "@src/utils/slug-util"
 import { TCourse } from "@src/types"
+import { Lesson } from "@src/models/Lesson"
 
 export const getCourses = async (req: Request, res: Response) => {
   try {
-    const courses = await Course.find().populate("categoryID", "title")
+    const courses = await Course.find()
+      .populate("categoryID", "title")
+      .populate("courseChapters.lessons")
     res.status(200).json({ data: courses, message: "Get courses successfully" })
   } catch (err) {
     res.status(500).json(err)
@@ -16,10 +19,10 @@ export const getCourses = async (req: Request, res: Response) => {
 export const getCourseDetail = async (req: Request, res: Response) => {
   try {
     const { slug } = req.params
-    const courses = await Course.findOne({ slug }).populate(
-      "categoryID",
-      "title"
-    )
+    const courses = await Course.findOne({ slug })
+      .populate("categoryID", "title")
+      .populate("courseChapters.lessons")
+
     res.status(200).json({ data: courses, message: "Get course successfully" })
   } catch (err) {
     res.status(500).json(err)
@@ -30,10 +33,12 @@ export const createCourse = async (req: Request, res: Response) => {
   try {
     const data = req.body as TCourse
     data.courseChapters.forEach((chapter) => {
-      chapter.lessons.forEach(
-        (lesson) => (lesson.slug = stringToSlug(lesson.title))
-      )
+      chapter.lessons.forEach((lesson) => {
+        if (typeof lesson === "string") return
+        lesson.slug = stringToSlug(lesson.title)
+      })
     })
+
     const slug = stringToSlug(data.title)
     await Course.create({ ...data, slug })
     res.status(200).json({ message: "Thêm khoá học thành công!" })
@@ -47,10 +52,25 @@ export const updateCourse = async (req: Request, res: Response) => {
     const { id } = req.params
     const data = req.body as TCourse
     data.courseChapters.forEach((chapter) => {
-      chapter.lessons.forEach(
-        (lesson) => (lesson.slug = stringToSlug(lesson.title))
-      )
+      chapter.lessons.forEach((lesson) => {
+        if (typeof lesson === "string") return
+        lesson.slug = stringToSlug(lesson.title)
+      })
     })
+    const getLessonIDs = async () => {
+      for (let i = 0; i < data.courseChapters.length; i++) {
+        const lessonHasId = data.courseChapters[i].lessons.map((lesson) => {
+          if (typeof lesson === "string") return
+          return lesson._id
+        })
+        await Lesson.deleteMany({ _id: lessonHasId })
+        const lessons = await Lesson.create(data.courseChapters[i].lessons)
+        data.courseChapters[i].lessons = lessons.map((lesson) =>
+          lesson._id.toString()
+        )
+      }
+    }
+    await getLessonIDs()
     const slug = stringToSlug(data.title)
     await Course.updateOne({ _id: id }, { ...data, slug })
     res.status(200).json({ message: "Chỉnh sửa khoá học thành công!" })

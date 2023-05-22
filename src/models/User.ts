@@ -13,11 +13,16 @@ const userSchema = new mongoose.Schema(
     status: { type: String, default: "active" },
     courseLearned: [
       {
-        courseSlug: String,
-        chapters: [
+        course: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Course",
+          required: true,
+        },
+        lessons: [
           {
-            chapterID: String,
-            lessons: [String],
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Lesson",
+            required: true,
           },
         ],
       },

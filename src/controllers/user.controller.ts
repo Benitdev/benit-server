@@ -1,4 +1,3 @@
-import { CourseLearned } from "./../models/CourseLearned"
 import type { Request, Response } from "express"
 import { User } from "@src/models/User"
 import { TUser } from "@src/types"
@@ -41,6 +40,40 @@ export const getCourseLearned = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ data: course, message: "Lấy thông tin khóa học thành công!" })
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const updateProgress = async (req: Request, res: Response) => {
+  try {
+    const { slug } = req.params
+    const course = await Course.findOne({ "courseLearned.courseSlug": slug })
+    res
+      .status(200)
+      .json({ data: course, message: "Lấy thông tin khóa học thành công!" })
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const registerCourse = async (req: Request, res: Response) => {
+  try {
+    if (req.user) {
+      const data = req.body as { course: string; lesson: string }
+      const { _id } = req.user as TUser
+      const user = await User.updateOne(
+        { _id },
+        {
+          $push: {
+            courseLearned: { course: data.course, lessons: [data.lesson] },
+          },
+        }
+      )
+      res
+        .status(200)
+        .json({ data: user, message: "Lấy thông tin khóa học thành công!" })
+    }
   } catch (err) {
     res.status(500).json(err)
   }

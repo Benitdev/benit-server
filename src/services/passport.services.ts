@@ -19,8 +19,12 @@ passport.use(
   new JWTStrategy(options, async (payload, done) => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      const user: typeof User | null = await User.findById(payload.userId)
+      const user: typeof User | null = await User.findById(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        payload.userId
+      )
+      // .populate("courseLearned.course")
+      // .populate("courseLearned.lessons")
       if (user) {
         return done(null, user)
       } else {

@@ -23,10 +23,9 @@ const courseSchema = new mongoose.Schema(
         description: String,
         lessons: [
           {
-            title: String,
-            slug: String,
-            videoID: String,
-            duration: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Lesson",
+            required: true,
           },
         ],
         createdAt: { type: Date, default: Date.now },

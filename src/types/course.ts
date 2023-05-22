@@ -19,10 +19,14 @@ type TChapter = {
   index: number
   title: string
   description: string
-  lessons: {
-    title: string
-    slug: string
-    videoID: string
-    duration: string
-  }[]
+  lessons: (TLesson | string)[]
+  // lessonIDs: string[]
+}
+
+export type TLesson = {
+  _id: string
+  title: string
+  slug: string
+  videoID: string
+  duration: string
 }
