@@ -6,6 +6,7 @@ import {
   deleteUser,
   getUsers,
   registerCourse,
+  updateProgress,
   updateUser,
 } from "@src/controllers/user.controller"
 
@@ -18,5 +19,6 @@ userRoutes.get("/list", getUsers)
 userRoutes.patch("/:id", updateUser)
 userRoutes.delete("/:id", deleteUser)
 userRoutes.post("/register-course", isAuthenticated, registerCourse)
+userRoutes.post("/update-progress", isAuthenticated, updateProgress)
 
 export default userRoutes
