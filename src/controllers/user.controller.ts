@@ -71,11 +71,11 @@ export const registerCourse = async (req: Request, res: Response) => {
 
 export const updateProgress = async (req: Request, res: Response) => {
   try {
-    const data = req.body as { course: string; currentLesson: string }
+    const data = req.body as { course: string; nextLessonID: string }
     const { _id } = req.user as TUser
-    const course = await Course.findById(data.course)
+    /*  const course = await Course.findById(data.course)
     const chapterCount = course?.courseChapters.length ?? 0
-
+    
     let nextLessonID: mongoose.Types.ObjectId | undefined = undefined
     for (let index = 0; index < chapterCount; index++) {
       const lessonIndex = course?.courseChapters[index].lessons.findIndex(
@@ -86,16 +86,18 @@ export const updateProgress = async (req: Request, res: Response) => {
         course?.courseChapters[index].lessons[lessonIndex + 1] ??
         course?.courseChapters[index + 1]?.lessons[0]
       if (lessonIndex !== -1) break
-    }
+    } */
 
-    if (nextLessonID) {
+    if (data.nextLessonID) {
       const user = await User.findById(_id)
-
       const courseLearned = user?.courseLearned?.find(
         (course) => course.course?.toString() === data.course
       )
 
-      courseLearned?.lessons.push(nextLessonID)
+      courseLearned?.lessons.push(
+        new mongoose.Types.ObjectId(data.nextLessonID)
+      )
+
       await user?.save()
     }
     res.status(200).json({ message: "Cập nhật tiến trình học thành công!" })
