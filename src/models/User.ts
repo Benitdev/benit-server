@@ -20,9 +20,16 @@ const userSchema = new mongoose.Schema(
         },
         lessons: [
           {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Lesson",
-            required: true,
+            lessonID: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Lesson",
+              required: true,
+            },
+            status: {
+              type: String,
+              enum: ["learning", "done"],
+              default: "learning",
+            },
           },
         ],
       },

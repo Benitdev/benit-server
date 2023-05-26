@@ -56,7 +56,10 @@ export const registerCourse = async (req: Request, res: Response) => {
         { _id },
         {
           $push: {
-            courseLearned: { course: data.course, lessons: [data.lesson] },
+            courseLearned: {
+              course: data.course,
+              lessons: [{ lessonID: data.lesson }],
+            },
           },
         }
       )
@@ -88,18 +91,19 @@ export const updateProgress = async (req: Request, res: Response) => {
       if (lessonIndex !== -1) break
     } */
 
+    const user = await User.findById(_id)
+    const courseLearned = user?.courseLearned?.find(
+      (course) => course.course?.toString() === data.course
+    )
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    courseLearned!.lessons!.at(-1)!.status = "done"
     if (data.nextLessonID) {
-      const user = await User.findById(_id)
-      const courseLearned = user?.courseLearned?.find(
-        (course) => course.course?.toString() === data.course
-      )
-
-      courseLearned?.lessons.push(
-        new mongoose.Types.ObjectId(data.nextLessonID)
-      )
-
-      await user?.save()
+      courseLearned?.lessons.push({
+        lessonID: new mongoose.Types.ObjectId(data.nextLessonID),
+        status: "learning",
+      })
     }
+    await user?.save()
     res.status(200).json({ message: "Cập nhật tiến trình học thành công!" })
   } catch (err) {
     res.status(500).json(err)
