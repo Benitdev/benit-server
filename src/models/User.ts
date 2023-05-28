@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String },
     provider: { type: String },
     role: { type: String, required: true, default: "user" },
-    status: { type: String, default: "active" },
+    status: {
+      type: String,
+      enum: ["active", "banned", "deleted"],
+      default: "active",
+    },
     courseLearned: [
       {
         course: {

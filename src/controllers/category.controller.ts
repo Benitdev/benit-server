@@ -7,7 +7,7 @@ import { stringToSlug } from "@src/utils/slug-util"
 export const getCourseCate = async (req: Request, res: Response) => {
   try {
     const { type } = req.query
-    const courses = await Category.find({ type })
+    const courses = await Category.find({ type }).sort({ createdAt: -1 })
     res.status(200).json({ data: courses, message: "Get courses successfully" })
   } catch (err) {
     res.status(500).json(err)

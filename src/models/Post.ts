@@ -7,10 +7,11 @@ const postSchema = new mongoose.Schema(
     content: { type: String, required: true },
     image: { type: String },
     tags: [{ type: String }],
+    readingTime: Number,
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      // required: true,
+      required: true,
     },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     comments: [
@@ -28,6 +29,11 @@ const postSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["pending", "approved", "rejected", "removed"],
+    },
+    feature: {
+      type: String,
+      enum: ["featured", "common"],
+      default: "featured",
     },
   },
   { timestamps: true }

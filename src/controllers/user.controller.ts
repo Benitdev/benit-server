@@ -7,7 +7,7 @@ import { Course } from "@src/models/Course"
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find()
+    const users = await User.find().sort({ createdAt: -1 })
     res.status(200).json({ data: users, message: "Get posts successfully" })
   } catch (err) {
     res.status(500).json(err)
@@ -76,20 +76,6 @@ export const updateProgress = async (req: Request, res: Response) => {
   try {
     const data = req.body as { course: string; nextLessonID: string }
     const { _id } = req.user as TUser
-    /*  const course = await Course.findById(data.course)
-    const chapterCount = course?.courseChapters.length ?? 0
-    
-    let nextLessonID: mongoose.Types.ObjectId | undefined = undefined
-    for (let index = 0; index < chapterCount; index++) {
-      const lessonIndex = course?.courseChapters[index].lessons.findIndex(
-        (lesson) => lesson._id.toString() === data.currentLesson
-      ) as number
-
-      nextLessonID =
-        course?.courseChapters[index].lessons[lessonIndex + 1] ??
-        course?.courseChapters[index + 1]?.lessons[0]
-      if (lessonIndex !== -1) break
-    } */
 
     const user = await User.findById(_id)
     const courseLearned = user?.courseLearned?.find(

@@ -1,22 +1,55 @@
 import type { Request, Response } from "express"
+
 import { Post } from "@src/models/Post"
-import type { TPost } from "@src/types"
+import type { TPost, TUser } from "@src/types"
 import { stringToSlug } from "@src/utils/slug-util"
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate("authorId", ["fullName", "avatar"])
     res.status(200).json({ data: posts, message: "Get posts successfully" })
   } catch (err) {
     res.status(500).json(err)
   }
 }
 
-export const createPost = async (req: Request, res: Response) => {
+export const getPostDetail = async (req: Request, res: Response) => {
   try {
+    const { slug } = req.params
+    const post = await Post.findOne({ slug }).populate("authorId", [
+      "fullName",
+      "avatar",
+    ])
+    if (post)
+      return res
+        .status(200)
+        .json({ data: post, message: "Get post successfully" })
+
+    return res.status(404)
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const createPost = async (req: Request, res: Response) => {
+  const wordsPerMinute = 800
+  try {
+    const { _id } = req.user as TUser
     const data = req.body as TPost
+
+    const readingTime = Math.ceil(
+      data.content.split(" ").length / wordsPerMinute
+    )
+
     const slug = stringToSlug(data.title)
-    const post = await Post.create({ ...data, slug })
+    const post = await Post.create({
+      ...data,
+      slug,
+      authorId: _id,
+      readingTime,
+    })
     if (post) return res.status(200).json({ message: "oke" })
     return res.status(400).json({ message: "Thêm bài viết không thành công" })
   } catch (err) {
@@ -25,11 +58,21 @@ export const createPost = async (req: Request, res: Response) => {
 }
 
 export const updatePost = async (req: Request, res: Response) => {
+  const wordsPerMinute = 800
   try {
+    const { _id } = req.user as TUser
     const { id } = req.params
     const data = req.body as TPost
+
+    const readingTime = Math.ceil(
+      data.content.split(" ").length / wordsPerMinute
+    )
+
     const slug = stringToSlug(data.title)
-    await Post.updateOne({ _id: id }, { ...data, slug })
+    await Post.updateOne(
+      { _id: id },
+      { ...data, slug, authorId: _id, readingTime }
+    )
     res.status(200).json({ message: "Chỉnh sửa bài viết thành công!" })
   } catch (err) {
     res.status(500).json(err)
