@@ -7,9 +7,19 @@ import { Lesson } from "@src/models/Lesson"
 
 export const getCourses = async (req: Request, res: Response) => {
   try {
-    const courses = await Course.find()
+    const { categoryId, title, status } = req.query
+
+    const criteria = []
+    if (categoryId) criteria.push({ categoryID: categoryId })
+    if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
+    if (status) criteria.push({ status })
+
+    const query = criteria.length > 0 ? { $and: criteria } : {}
+
+    const courses = await Course.find(query)
       .populate("categoryID", "title")
       .populate("courseChapters.lessons")
+
     res.status(200).json({ data: courses, message: "Get courses successfully" })
   } catch (err) {
     res.status(500).json(err)

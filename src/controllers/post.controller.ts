@@ -6,9 +6,18 @@ import { stringToSlug } from "@src/utils/slug-util"
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find()
+    const { feature, categoryId, title, status } = req.query
+    const criteria = []
+    if (feature) criteria.push({ feature })
+    if (categoryId) criteria.push({ tags: categoryId })
+    if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
+    if (status) criteria.push({ status })
+
+    const query = criteria.length > 0 ? { $and: criteria } : {}
+    const posts = await Post.find(query)
       .sort({ createdAt: -1 })
       .populate("authorId", ["fullName", "avatar"])
+
     res.status(200).json({ data: posts, message: "Get posts successfully" })
   } catch (err) {
     res.status(500).json(err)
