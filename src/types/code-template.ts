@@ -1,6 +1,6 @@
 export type TCodeTemplate = {
   _id: string
-  categoryID: string
+  categoryId: string
   htmlCode: string
   cssCode: string
   jsCode: string

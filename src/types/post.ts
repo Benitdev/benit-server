@@ -1,6 +1,7 @@
 export type TPost = {
   _id: string
   title: string
+  description: string
   slug: string
   content: string
   image: string

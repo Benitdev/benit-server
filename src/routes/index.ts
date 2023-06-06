@@ -6,6 +6,7 @@ import courseRoutes from "./course.route"
 import categoriesRoutes from "./category.route"
 import codeTemplateRoutes from "./code-template.route"
 import uploadRoutes from "./upload.route"
+import commentRoutes from "./comment.route"
 
 const router = Router()
 
@@ -16,5 +17,6 @@ router.use("/courses", courseRoutes)
 router.use("/categories", categoriesRoutes)
 router.use("/code-template", codeTemplateRoutes)
 router.use("/upload", uploadRoutes)
+router.use("/comments", commentRoutes)
 
 export default router

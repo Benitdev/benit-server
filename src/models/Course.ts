@@ -6,7 +6,7 @@ const courseSchema = new mongoose.Schema(
     slug: { type: String, required: true },
     description: { type: String, required: true },
     image: { type: String },
-    categoryID: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: true,
@@ -33,21 +33,10 @@ const courseSchema = new mongoose.Schema(
       },
     ],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [
-      {
-        authorId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        content: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
     status: {
       type: String,
-      enum: ["pending", "released", "removed"],
-      default: "released",
+      enum: ["pending", "published", "removed"],
+      default: "published",
     },
   },
   { timestamps: true }

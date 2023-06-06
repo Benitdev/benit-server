@@ -4,7 +4,7 @@ const codeSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String },
-    categoryID: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "category",
       required: true,
@@ -20,7 +20,8 @@ const codeSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "approved", "rejected", "removed"],
+      enum: ["pending", "approved", "rejected", "hided"],
+      default: "pending",
     },
   },
   { timestamps: true }

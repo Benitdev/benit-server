@@ -10,14 +10,15 @@ export const getCourses = async (req: Request, res: Response) => {
     const { categoryId, title, status } = req.query
 
     const criteria = []
-    if (categoryId) criteria.push({ categoryID: categoryId })
+    if (categoryId) criteria.push({ categoryId: categoryId })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
     if (status) criteria.push({ status })
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
 
     const courses = await Course.find(query)
-      .populate("categoryID", "title")
+      .sort({ createdAt: -1 })
+      .populate("categoryId", "title")
       .populate("courseChapters.lessons")
 
     res.status(200).json({ data: courses, message: "Get courses successfully" })
@@ -30,7 +31,7 @@ export const getCourseDetail = async (req: Request, res: Response) => {
   try {
     const { slug } = req.params
     const courses = await Course.findOne({ slug })
-      .populate("categoryID", "title")
+      .populate("categoryId", "title")
       .populate("courseChapters.lessons")
 
     res.status(200).json({ data: courses, message: "Get course successfully" })
@@ -49,8 +50,18 @@ export const createCourse = async (req: Request, res: Response) => {
       })
     })
 
+    const createLessons = async () => {
+      for (let i = 0; i < data.courseChapters.length; i++) {
+        const lessons = await Lesson.create(data.courseChapters[i].lessons)
+        data.courseChapters[i].lessons = lessons.map((lesson) =>
+          lesson._id.toString()
+        )
+      }
+    }
+    await createLessons()
     const slug = stringToSlug(data.title)
     await Course.create({ ...data, slug })
+
     res.status(200).json({ message: "Thêm khoá học thành công!" })
   } catch (err) {
     res.status(500).json(err)

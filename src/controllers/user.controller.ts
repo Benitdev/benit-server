@@ -58,7 +58,7 @@ export const registerCourse = async (req: Request, res: Response) => {
           $push: {
             courseLearned: {
               course: data.course,
-              lessons: [{ lessonID: data.lesson }],
+              lessons: [{ lessonId: data.lesson }],
             },
           },
         }
@@ -85,10 +85,11 @@ export const updateProgress = async (req: Request, res: Response) => {
     courseLearned!.lessons!.at(-1)!.status = "done"
     if (data.nextLessonID) {
       courseLearned?.lessons.push({
-        lessonID: new mongoose.Types.ObjectId(data.nextLessonID),
+        lessonId: new mongoose.Types.ObjectId(data.nextLessonID),
         status: "learning",
       })
     }
+
     await user?.save()
     res.status(200).json({ message: "Cập nhật tiến trình học thành công!" })
   } catch (err) {

@@ -3,20 +3,23 @@ import type { Request, Response } from "express"
 import { Post } from "@src/models/Post"
 import type { TPost, TUser } from "@src/types"
 import { stringToSlug } from "@src/utils/slug-util"
+import { Comment } from "@src/models/Comment"
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const { feature, categoryId, title, status } = req.query
+    const { feature, categoryId, title, status, authorId } = req.query
     const criteria = []
     if (feature) criteria.push({ feature })
-    if (categoryId) criteria.push({ tags: categoryId })
+    if (categoryId) criteria.push({ tags: { $in: categoryId } })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
     if (status) criteria.push({ status })
+    if (authorId) criteria.push({ authorId })
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
     const posts = await Post.find(query)
       .sort({ createdAt: -1 })
       .populate("authorId", ["fullName", "avatar"])
+      .populate("tags", ["title"])
 
     res.status(200).json({ data: posts, message: "Get posts successfully" })
   } catch (err) {
@@ -31,10 +34,18 @@ export const getPostDetail = async (req: Request, res: Response) => {
       "fullName",
       "avatar",
     ])
-    if (post)
-      return res
-        .status(200)
-        .json({ data: post, message: "Get post successfully" })
+
+    if (post) {
+      const totalComment = await Comment.countDocuments({ postId: post._id })
+
+      return res.status(200).json({
+        data: {
+          ...post.toObject(),
+          totalComment,
+        },
+        message: "Get post successfully",
+      })
+    }
 
     return res.status(404)
   } catch (err) {

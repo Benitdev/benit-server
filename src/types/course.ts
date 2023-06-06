@@ -3,24 +3,21 @@ export type TCourse = {
   title: string
   slug: string
   description: string
-  categoryID: string
+  categoryId: string
   image: string
   type: string
-  tags: string[]
   likes: any[]
-  comments: any[]
   views: number
   courseChapters: TChapter[]
   createAt: string
   updateAt: string
 }
 
-type TChapter = {
+export type TChapter = {
   index: number
   title: string
   description: string
   lessons: (TLesson | string)[]
-  // lessonIDs: string[]
 }
 
 export type TLesson = {

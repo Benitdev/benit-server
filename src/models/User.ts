@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
         },
         lessons: [
           {
-            lessonID: {
+            lessonId: {
               type: mongoose.Schema.Types.ObjectId,
               ref: "Lesson",
               required: true,
