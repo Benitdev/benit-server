@@ -1,3 +1,4 @@
+import { isAuthenticated } from "@src/middlewares/auth"
 import jwtUtil from "@src/utils/jwt-util"
 import { Router } from "express"
 import passport from "passport"
@@ -49,5 +50,14 @@ authRoutes.get(
     res.send("<script>window.close()</script>")
   }
 )
+
+authRoutes.post("/logout", isAuthenticated, (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err)
+    }
+    return res.status(200).json({ message: "Logout successfully!" })
+  })
+})
 
 export default authRoutes

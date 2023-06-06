@@ -7,13 +7,14 @@ import { Comment } from "@src/models/Comment"
 
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const { feature, categoryId, title, status, authorId } = req.query
+    const { feature, categoryId, title, status, authorId, likes } = req.query
     const criteria = []
     if (feature) criteria.push({ feature })
     if (categoryId) criteria.push({ tags: { $in: categoryId } })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
     if (status) criteria.push({ status })
     if (authorId) criteria.push({ authorId })
+    if (likes) criteria.push({ likes })
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
     const posts = await Post.find(query)
@@ -30,10 +31,9 @@ export const getPosts = async (req: Request, res: Response) => {
 export const getPostDetail = async (req: Request, res: Response) => {
   try {
     const { slug } = req.params
-    const post = await Post.findOne({ slug }).populate("authorId", [
-      "fullName",
-      "avatar",
-    ])
+    const post = await Post.findOne({ slug })
+      .populate("authorId", ["fullName", "avatar"])
+      .populate("tags", ["title"])
 
     if (post) {
       const totalComment = await Comment.countDocuments({ postId: post._id })
@@ -70,7 +70,8 @@ export const createPost = async (req: Request, res: Response) => {
       authorId: _id,
       readingTime,
     })
-    if (post) return res.status(200).json({ message: "oke" })
+    if (post)
+      return res.status(200).json({ message: "Thêm bài viết thành công!" })
     return res.status(400).json({ message: "Thêm bài viết không thành công" })
   } catch (err) {
     return res.status(500).json(err)
@@ -106,6 +107,59 @@ export const deletePost = async (req: Request, res: Response) => {
     if (result.deletedCount !== 0)
       return res.status(200).json({ message: "Xoá bài viết thành công!" })
     return res.status(400).json({ message: "Xoá bài viết không thành công!" })
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const getFavoritePost = async (req: Request, res: Response) => {
+  try {
+    const { _id: userId } = req.user as TUser
+    const { id } = req.params
+
+    const likedPost = await Post.find({
+      _id: id,
+      likes: userId,
+    })
+    if (likedPost.length !== 0)
+      return res.status(200).json({ data: { liked: true } })
+    else return res.status(200).json({ data: { liked: false } })
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const favoritePost = async (req: Request, res: Response) => {
+  try {
+    const { _id: userId } = req.user as TUser
+    const { id } = req.params
+    const { action } = req.query
+
+    if (action === "add") {
+      await Post.updateOne(
+        { _id: id },
+        {
+          $push: {
+            likes: userId,
+          },
+        }
+      )
+      res
+        .status(200)
+        .json({ message: "Thêm bài viết vào yêu thích thành công!" })
+    } else {
+      await Post.updateOne(
+        { _id: id },
+        {
+          $pull: {
+            likes: userId,
+          },
+        }
+      )
+      res
+        .status(200)
+        .json({ message: "Xoá bài viết khỏi yêu thích thành công!" })
+    }
   } catch (err) {
     res.status(500).json(err)
   }
