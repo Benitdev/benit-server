@@ -5,12 +5,13 @@ import { TCodeTemplate, TUser } from "@src/types"
 
 export const getCodeTemplate = async (req: Request, res: Response) => {
   try {
-    const { categoryId, title, status, authorId } = req.query
+    const { categoryId, title, status, authorId, likes } = req.query
     const criteria = []
     if (categoryId) criteria.push({ categoryId: categoryId })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
     if (status) criteria.push({ status })
     if (authorId) criteria.push({ authorId })
+    if (likes) criteria.push({ likes })
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
     const code = await Code.find(query)

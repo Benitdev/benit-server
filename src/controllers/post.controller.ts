@@ -1,10 +1,16 @@
 import type { Request, Response } from "express"
+import TurndownService from "turndown"
 
 import { Post } from "@src/models/Post"
 import type { TPost, TUser } from "@src/types"
 import { stringToSlug } from "@src/utils/slug-util"
 import { Comment } from "@src/models/Comment"
+import { Code } from "@src/models/Code"
 
+/* const turndownService = new TurndownService({
+  codeBlockStyle: "fenced",
+})
+ */
 export const getPosts = async (req: Request, res: Response) => {
   try {
     const { feature, categoryId, title, status, authorId, likes } = req.query
@@ -92,7 +98,13 @@ export const updatePost = async (req: Request, res: Response) => {
     const slug = stringToSlug(data.title)
     await Post.updateOne(
       { _id: id },
-      { ...data, slug, authorId: _id, readingTime }
+      {
+        ...data,
+        slug,
+        authorId: _id,
+        readingTime,
+        content: data.content,
+      }
     )
     res.status(200).json({ message: "Chỉnh sửa bài viết thành công!" })
   } catch (err) {
@@ -116,6 +128,17 @@ export const getFavoritePost = async (req: Request, res: Response) => {
   try {
     const { _id: userId } = req.user as TUser
     const { id } = req.params
+    const { type } = req.query
+
+    if (type === "code") {
+      const likedCode = await Code.find({
+        _id: id,
+        likes: userId,
+      })
+      if (likedCode.length !== 0)
+        return res.status(200).json({ data: { liked: true } })
+      else return res.status(200).json({ data: { liked: false } })
+    }
 
     const likedPost = await Post.find({
       _id: id,
@@ -133,7 +156,35 @@ export const favoritePost = async (req: Request, res: Response) => {
   try {
     const { _id: userId } = req.user as TUser
     const { id } = req.params
-    const { action } = req.query
+    const { action, type } = req.query
+
+    if (type === "code") {
+      if (action === "add") {
+        await Code.updateOne(
+          { _id: id },
+          {
+            $push: {
+              likes: userId,
+            },
+          }
+        )
+        return res
+          .status(200)
+          .json({ message: "Thêm code vào yêu thích thành công!" })
+      } else {
+        await Code.updateOne(
+          { _id: id },
+          {
+            $pull: {
+              likes: userId,
+            },
+          }
+        )
+        return res
+          .status(200)
+          .json({ message: "Xoá code khỏi yêu thích thành công!" })
+      }
+    }
 
     if (action === "add") {
       await Post.updateOne(
@@ -144,7 +195,7 @@ export const favoritePost = async (req: Request, res: Response) => {
           },
         }
       )
-      res
+      return res
         .status(200)
         .json({ message: "Thêm bài viết vào yêu thích thành công!" })
     } else {
@@ -156,10 +207,27 @@ export const favoritePost = async (req: Request, res: Response) => {
           },
         }
       )
-      res
+      return res
         .status(200)
         .json({ message: "Xoá bài viết khỏi yêu thích thành công!" })
     }
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const updateView = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params
+    await Post.updateOne(
+      { _id: id },
+      {
+        $inc: {
+          views: 1,
+        },
+      }
+    )
+    res.status(200).json({ message: "Thành công!" })
   } catch (err) {
     res.status(500).json(err)
   }

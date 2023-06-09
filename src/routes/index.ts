@@ -8,11 +8,13 @@ import categoriesRoutes from "./category.route"
 import codeTemplateRoutes from "./code-template.route"
 import uploadRoutes from "./upload.route"
 import commentRoutes from "./comment.route"
+import { statistical } from "@src/controllers/statistical.controller"
 import { generalSearch } from "@src/controllers/search.controller"
 
 const router = Router()
 
 router.get("/search", generalSearch)
+router.get("/statistical", statistical)
 router.use("/posts", postRoutes)
 router.use("/auth", authRoutes)
 router.use("/user", userRoutes)
