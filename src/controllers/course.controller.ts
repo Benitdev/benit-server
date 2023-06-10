@@ -7,12 +7,13 @@ import { Lesson } from "@src/models/Lesson"
 
 export const getCourses = async (req: Request, res: Response) => {
   try {
-    const { categoryId, title, status } = req.query
+    const { categoryId, title, status, type } = req.query
 
     const criteria = []
     if (categoryId) criteria.push({ categoryId: categoryId })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
     if (status) criteria.push({ status })
+    if (type) criteria.push({ type })
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
 
