@@ -5,7 +5,14 @@ import { TCodeTemplate, TUser } from "@src/types"
 
 export const getCodeTemplate = async (req: Request, res: Response) => {
   try {
-    const { categoryId, title, status, authorId, likes } = req.query
+    const { categoryId, title, status, authorId, likes, page } = req.query
+
+    const limit = 10
+    const skip = (Number(page) - 1) * limit
+
+    const totalDocuments = await Code.countDocuments()
+    const lastPage = Math.ceil(totalDocuments / limit)
+
     const criteria = []
     if (categoryId) criteria.push({ categoryId: categoryId })
     if (title) criteria.push({ title: new RegExp(`${title as string}`, "i") })
@@ -15,12 +22,15 @@ export const getCodeTemplate = async (req: Request, res: Response) => {
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
     const code = await Code.find(query)
+      .skip(skip)
+      .limit(limit)
       .sort({ createdAt: -1 })
       .populate("authorId", ["fullName", "avatar"])
 
-    res
-      .status(200)
-      .json({ data: code, message: "Get code template successfully" })
+    res.status(200).json({
+      data: { data: code, lastPage },
+      message: "Get code template successfully",
+    })
   } catch (err) {
     res.status(500).json(err)
   }

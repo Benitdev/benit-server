@@ -18,18 +18,20 @@ const courseSchema = new mongoose.Schema(
     level: String,
     courseChapters: [
       {
-        index: Number,
-        title: String,
-        description: String,
-        lessons: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Lesson",
-            required: true,
-          },
-        ],
-        createdAt: { type: Date, default: Date.now },
-        updateAt: { type: Date, default: Date.now },
+        type: {
+          index: Number,
+          title: String,
+          description: String,
+          lessons: [
+            {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "Lesson",
+            },
+          ],
+          createdAt: { type: Date, default: Date.now },
+          updateAt: { type: Date, default: Date.now },
+        },
+        default: {},
       },
     ],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

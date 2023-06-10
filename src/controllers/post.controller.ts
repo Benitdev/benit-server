@@ -13,7 +13,20 @@ import { Code } from "@src/models/Code"
  */
 export const getPosts = async (req: Request, res: Response) => {
   try {
-    const { feature, categoryId, title, status, authorId, likes } = req.query
+    const {
+      feature,
+      categoryId,
+      title,
+      status,
+      authorId,
+      likes,
+      page = 1,
+    } = req.query
+    const limit = 10
+    const skip = (Number(page) - 1) * limit
+
+    const totalDocuments = await Post.countDocuments()
+    const lastPage = Math.ceil(totalDocuments / limit)
     const criteria = []
     if (feature) criteria.push({ feature })
     if (categoryId) criteria.push({ tags: { $in: categoryId } })
@@ -24,11 +37,35 @@ export const getPosts = async (req: Request, res: Response) => {
 
     const query = criteria.length > 0 ? { $and: criteria } : {}
     const posts = await Post.find(query)
+      .skip(skip)
+      .limit(limit)
       .sort({ createdAt: -1 })
       .populate("authorId", ["fullName", "avatar"])
       .populate("tags", ["title"])
 
-    res.status(200).json({ data: posts, message: "Get posts successfully" })
+    res.status(200).json({
+      data: { data: posts, lastPage },
+      message: "Get posts successfully",
+    })
+  } catch (err) {
+    res.status(500).json(err)
+  }
+}
+
+export const getSimilarPosts = async (req: Request, res: Response) => {
+  try {
+    const { categoryId } = req.query as { categoryId: string }
+
+    const posts = await Post.find({ tags: { $in: categoryId.split(",") } })
+      .limit(10)
+      .sort({ createdAt: -1 })
+      .populate("authorId", ["fullName", "avatar"])
+      .populate("tags", ["title"])
+
+    res.status(200).json({
+      data: posts,
+      message: "Get posts successfully",
+    })
   } catch (err) {
     res.status(500).json(err)
   }
@@ -103,7 +140,6 @@ export const updatePost = async (req: Request, res: Response) => {
         slug,
         authorId: _id,
         readingTime,
-        content: data.content,
       }
     )
     res.status(200).json({ message: "Chỉnh sửa bài viết thành công!" })

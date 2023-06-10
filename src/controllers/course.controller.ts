@@ -44,7 +44,7 @@ export const createCourse = async (req: Request, res: Response) => {
   try {
     const data = req.body as TCourse
     data.courseChapters.forEach((chapter) => {
-      chapter.lessons.forEach((lesson) => {
+      chapter.lessons?.forEach((lesson) => {
         if (typeof lesson === "string") return
         lesson.slug = stringToSlug(lesson.title)
       })
@@ -52,10 +52,12 @@ export const createCourse = async (req: Request, res: Response) => {
 
     const createLessons = async () => {
       for (let i = 0; i < data.courseChapters.length; i++) {
-        const lessons = await Lesson.create(data.courseChapters[i].lessons)
-        data.courseChapters[i].lessons = lessons.map((lesson) =>
-          lesson._id.toString()
-        )
+        if (data.courseChapters[i].lessons) {
+          const lessons = await Lesson.create(data.courseChapters[i].lessons)
+          data.courseChapters[i].lessons = lessons.map((lesson) =>
+            lesson._id.toString()
+          )
+        }
       }
     }
     await createLessons()

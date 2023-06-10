@@ -8,12 +8,14 @@ import {
   favoritePost,
   getFavoritePost,
   updateView,
+  getSimilarPosts,
 } from "@src/controllers/post.controller"
 import { isAuthenticated } from "@src/middlewares/auth"
 
 const postRoutes = Router()
 
 postRoutes.get("/", getPosts)
+postRoutes.get("/similar", getSimilarPosts)
 postRoutes.get("/:slug", getPostDetail)
 postRoutes.post("/", isAuthenticated, createPost)
 postRoutes.get("/favorite/:id", isAuthenticated, getFavoritePost)

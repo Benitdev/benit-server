@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import passport from "passport"
 import {
   Strategy as JWTStrategy,
@@ -9,6 +11,7 @@ import { Strategy as FacebookStrategy } from "passport-facebook"
 import { Strategy as GitHubStrategy } from "passport-github2"
 import EnvVars from "@src/declarations/major/EnvVars"
 import { User } from "@src/models/User"
+import { VerifyCallback } from "jsonwebtoken"
 
 const options: StrategyOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -36,14 +39,19 @@ passport.use(
   })
 )
 
-/* passport.use(
+passport.use(
   new GitHubStrategy(
     {
       clientID: EnvVars.githubClientId,
       clientSecret: EnvVars.githubSecretId,
-      callbackURL: `http://localhost:${EnvVars.port}/api/v1/auth/google/callback`,
+      callbackURL: `http://localhost:${EnvVars.port}/api/v1/auth/github/callback`,
     },
-    async (accessToken, refreshToken, profile, cb) => {
+    async (
+      accessToken: string,
+      refreshToken: string,
+      profile: any,
+      cb: VerifyCallback
+    ) => {
       const defaultUser = {
         username: profile.emails?.[0].value,
         password: "",
@@ -61,7 +69,7 @@ passport.use(
     }
   )
 )
- */
+
 passport.use(
   new GoogleStrategy(
     {
