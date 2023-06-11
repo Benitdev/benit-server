@@ -25,8 +25,6 @@ export const getPosts = async (req: Request, res: Response) => {
     const limit = 10
     const skip = (Number(page) - 1) * limit
 
-    const totalDocuments = await Post.countDocuments()
-    const lastPage = Math.ceil(totalDocuments / limit)
     const criteria = []
     if (feature) criteria.push({ feature })
     if (categoryId) criteria.push({ tags: { $in: categoryId } })
@@ -43,6 +41,8 @@ export const getPosts = async (req: Request, res: Response) => {
       .populate("authorId", ["fullName", "avatar"])
       .populate("tags", ["title"])
 
+    const totalDocuments = await Post.countDocuments(query)
+    const lastPage = Math.ceil(totalDocuments / limit)
     res.status(200).json({
       data: { data: posts, lastPage },
       message: "Get posts successfully",
