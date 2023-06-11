@@ -7,7 +7,7 @@ export const getCodeTemplate = async (req: Request, res: Response) => {
   try {
     const { categoryId, title, status, authorId, likes, page } = req.query
 
-    const limit = 10
+    const limit = 6
     const skip = (Number(page) - 1) * limit
 
     const totalDocuments = await Code.countDocuments()
